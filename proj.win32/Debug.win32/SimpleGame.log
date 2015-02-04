@@ -1,0 +1,20 @@
+﻿  GameLayer.cpp
+e:\cocos2d-x-2.2.3\projects\crash\classes\gamelayer.cpp(80): warning C4305: “=”: 从“double”到“float”截断
+e:\cocos2d-x-2.2.3\projects\crash\classes\gamelayer.cpp(201): warning C4018: “<”: 有符号/无符号不匹配
+e:\cocos2d-x-2.2.3\projects\crash\classes\gamelayer.cpp(235): warning C4018: “<”: 有符号/无符号不匹配
+e:\cocos2d-x-2.2.3\projects\crash\classes\gamelayer.cpp(272): warning C4018: “<”: 有符号/无符号不匹配
+e:\cocos2d-x-2.2.3\projects\crash\classes\gamelayer.cpp(348): warning C4018: “<”: 有符号/无符号不匹配
+e:\cocos2d-x-2.2.3\projects\crash\classes\gamelayer.cpp(368): warning C4018: “<”: 有符号/无符号不匹配
+e:\cocos2d-x-2.2.3\projects\crash\classes\gamelayer.cpp(399): warning C4018: “<”: 有符号/无符号不匹配
+e:\cocos2d-x-2.2.3\projects\crash\classes\gamelayer.cpp(416): warning C4018: “<”: 有符号/无符号不匹配
+e:\cocos2d-x-2.2.3\projects\crash\classes\gamelayer.cpp(519): warning C4018: “<”: 有符号/无符号不匹配
+e:\cocos2d-x-2.2.3\projects\crash\classes\gamelayer.cpp(539): warning C4101: “ticon”: 未引用的局部变量
+e:\cocos2d-x-2.2.3\projects\crash\classes\gamelayer.cpp(695): warning C4018: “<”: 有符号/无符号不匹配
+  GameIcon.cpp
+e:\cocos2d-x-2.2.3\projects\crash\classes\gameicon.cpp(19): warning C4305: “参数”: 从“double”到“float”截断
+  正在生成代码...
+  正在编译...
+  AppDelegate.cpp
+  正在生成代码...
+  复制了 2 个文件
+  SimpleGame.vcxproj -> E:\cocos2d-x-2.2.3\projects\crash\proj.win32\Debug.win32\SimpleGame.exe

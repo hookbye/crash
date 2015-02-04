@@ -1,6 +1,6 @@
 #include "GameIcon.h"
 USING_NS_CC;
-GameIcon::GameIcon(int tx,int ty,int tid,int tstatus):x(tx),y(ty),id(tid),status(tstatus),istable(false),canMoveLoc(ccp(-1,-1)),properties(NULL)
+GameIcon::GameIcon(int tx,int ty,int tid,int tstatus):x(tx),y(ty),id(tid),status(tstatus),istable(false),beRemove(false),canMoveLoc(ccp(-1,-1)),properties(NULL)
 {
 	left = right = up = down = fallNum = 0;
 }
@@ -73,17 +73,29 @@ void GameIcon::updateUI()
 	CCSpriteFrame* frame = CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName(name->getCString());
 	this->setDisplayFrame(frame);
 }
-bool GameIcon::canbeRemove()
+bool GameIcon::canbeRemove(bool isSelIcon)
 {
 	if((left+right)>1 || (up+down)>1)
 	{
-		checkStatus();
+		checkStatus(isSelIcon);
 		return true;
 	}
 	return false;
 }
 
-void GameIcon::checkStatus()
+bool GameIcon::checkStatus(bool isSelIcon)
 {
-
+	if((left == right && left == 2) ||(up == down && up == 2))
+	{
+		setStatus(2);
+		beRemove = false;
+		return false;
+	}else if((left+right > 2 || up+down > 2)&&isSelIcon)
+	{
+		setStatus(4);
+		beRemove = false;
+		return false;
+	}
+	beRemove = true;
+	return true;
 }

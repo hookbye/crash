@@ -14,10 +14,11 @@ public:
 	void setID(int cid,bool change = true);
 	CC_SYNTHESIZE(int,x,X);
 	CC_SYNTHESIZE(int,y,Y);
+	CC_SYNTHESIZE(bool,beRemove,BeRemove);
 	CC_SYNTHESIZE(cocos2d::CCPoint,canMoveLoc,CanMoveLoc);
 
-	bool canbeRemove();
-	void checkStatus();
+	bool canbeRemove(bool isSelIcon = false);
+	bool checkStatus(bool isSelIcon = false);
 public:	
 	int left;
 	int right;

@@ -4,7 +4,7 @@
 USING_NS_CC;
 const int mapRow = 8;
 const int mapCol = 7;
-
+const int iconType = 5;
 int mapConfig[mapCol][mapRow] = 
 {
 	1,1,1,1,1,1,1,1,
@@ -110,15 +110,15 @@ bool GameLayer::init()
 }
 void GameLayer::readLevelFromData(int level)
 {
-	for(int i=0;i<col;i++)
-	{
-		for(int j = 0;j<row;j++)
-		{
-			mapConfig[i][j] = *(*(clevel+level)+i*row+j);//levels[i][j];
-			printf("%d,",mapConfig[i][j]);
-		}
-		printf("\n");
-	}
+	//for(int i=0;i<col;i++)
+	//{
+	//	for(int j = 0;j<row;j++)
+	//	{
+	//		mapConfig[i][j] = *(*(clevel+level)+i*row+j);//levels[i][j];
+	//		printf("%d,",mapConfig[i][j]);
+	//	}
+	//	printf("\n");
+	//}
 	resetBoard();
 }
 void GameLayer::update(float dt)
@@ -216,7 +216,7 @@ void GameLayer::initGameBoard()
 	{
 		for (int j=0;j<row;j++)
 		{
-			int id = rand()%7+1;
+			int id = rand()%iconType+1;
 			GameIcon* icon = GameIcon::create(i,j,id*mapConfig[i][j]);
 			icon->setPosition(correctPos(i,j));
 			icon->retain();
@@ -241,7 +241,7 @@ void GameLayer::resetBoard()
 			stables->addObject(icon);
 		}
 		else
- 			icon->setID((rand()%7+1));
+ 			icon->setID((rand()%iconType+1));
 	}
 	while(noneToMove()||checkAllCell())//noneToMove()||
 	{
@@ -336,7 +336,10 @@ void GameLayer::ccTouchMoved(CCTouch* ptouch,CCEvent* pevent)
 		}
 	}
 }
+void GameLayer::setEffectIcons(GameIcon* icon)
+{
 
+}
 void GameLayer::onMoveEnd()
 {
 	if (checkAllCell())
@@ -347,13 +350,19 @@ void GameLayer::onMoveEnd()
 			icon = (GameIcon*)icons->objectAtIndex(i);
 			if(icon)
 			{
-				if(checkCell(icon))
+				bool isSel = selIcon == icon || swapIcon == icon;
+				if(checkCell(icon)&&icon->canbeRemove(isSel))
+				{
+					//selicon为空时默认选一个来实现特效
+					if(selIcon == NULL)
+						selIcon = icon;
+					//获取受影响的icon
+					//setEffectIcons();
+				}
+				if(icon->getBeRemove())
 				{
 					spares->addObject(icon);
-					//icon->setVisible(false);
 				}
-				//else
-					//icon->setVisible(true);
 			}
 		}
 		for(int i=0;i<spares->count();i++)
@@ -403,25 +412,7 @@ void GameLayer::fallDown()
 
 	}
 	spares->removeAllObjects();
-	/*for(int i=0;i<stables->count();i++)
-	{
-		icon = (GameIcon*)stables->objectAtIndex(i);
-		int tx = icon->getX();
-		int ty = icon->getY();
-		for(int j=0;j<row;j++)
-		{
-			tmpIcon = getIconByLoc(tx,j);
-			if (tmpIcon && !tmpIcon->isStable() && tmpIcon->getY()>ty)
-			{
-				tmpIcon->fallNum++;
-			}
-		}
-
-	}*/
-	/*for (int i=0;i<spares->count();i++)
-	{
-		spares->removeObjectAtIndex(i);
-	}*/
+	
 	for(int i=0;i<icons->count();i++)
 	{
 		icon = (GameIcon*)icons->objectAtIndex(i);
@@ -438,14 +429,8 @@ void GameLayer::fallDown()
 					k--;
 					fallNum++;
 				}
-				/*if(tmpIcon && tmpIcon->isStable())
-					fallNum++;*/
 			}
-			/*while(getIconByLoc(tx,ty-fallNum) && getIconByLoc(tx,ty-fallNum)->isStable())
-			{
 
-				++fallNum;
-			}*/
 			if (fallNum>maxTime)
 			{
 				maxTime=fallNum;
@@ -619,7 +604,7 @@ void GameLayer::fillIcons()
 				int dis = ++colFall[i];
 
 				int targety = j;
-				GameIcon* icon = GameIcon::create(i,targety,(rand()%7+1));
+				GameIcon* icon = GameIcon::create(i,targety,(rand()%iconType+1));
 				icon->setPosition(correctPos(i,row+dis));
 				this->addChild(icon);
 				icons->addObject(icon);

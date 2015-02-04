@@ -42,6 +42,8 @@ public:
 	bool canbeMove(GameIcon* icon);
 	bool noneToMove();
 
+	void setEffectIcons(GameIcon* icon);
+
 	void update(float dt);
 private:
 	cocos2d::CCArray* icons;//初始所有icon集合
