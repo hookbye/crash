@@ -4,6 +4,11 @@
 *.o
 *.obj
 
+*.tlog
+*.idb
+*.pdb
+proj.win32/Debug.win32
+
 # Precompiled Headers
 *.gch
 *.pch
