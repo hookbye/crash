@@ -3,10 +3,11 @@
 
 USING_NS_CC;
 const int mapRow = 8;
-const int mapCol = 7;
-const int iconType = 5;
+const int mapCol = 8;
+const int iconType =7;
 int mapConfig[mapCol][mapRow] = 
 {
+	1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,
@@ -63,7 +64,7 @@ bool GameLayer::init()
 
 	row = mapRow;//4;//8;
 	col = mapCol;//5;//7;
-	iconSize = 70;
+	iconSize = visibleSize.width/mapCol;
 	offset = ccp((visibleSize.width-col*iconSize)/2+iconSize/2,(visibleSize.height-row*iconSize)/2-10);
 	touchRect = CCRectMake(offset.x-iconSize/2,offset.y-iconSize/2,col*iconSize,row*iconSize);
 	icons = CCArray::createWithCapacity(col*row);
@@ -110,15 +111,15 @@ bool GameLayer::init()
 }
 void GameLayer::readLevelFromData(int level)
 {
-	//for(int i=0;i<col;i++)
-	//{
-	//	for(int j = 0;j<row;j++)
-	//	{
-	//		mapConfig[i][j] = *(*(clevel+level)+i*row+j);//levels[i][j];
-	//		printf("%d,",mapConfig[i][j]);
-	//	}
-	//	printf("\n");
-	//}
+	for(int i=0;i<col;i++)
+	{
+		for(int j = 0;j<row;j++)
+		{
+			mapConfig[i][j] = *(*(clevel+level)+i*row+j);//levels[i][j];
+			printf("%d,",mapConfig[i][j]);
+		}
+		printf("\n");
+	}
 	resetBoard();
 }
 void GameLayer::update(float dt)
@@ -338,7 +339,42 @@ void GameLayer::ccTouchMoved(CCTouch* ptouch,CCEvent* pevent)
 }
 void GameLayer::setEffectIcons(GameIcon* icon)
 {
-
+	GameIcon* tempIcon;
+	int id = icon->getID();
+	int status = icon->getStatus();
+	if(status==2)
+	{
+		
+		CCPoint pos=ccp(icon->getX(),icon->getY());
+		CCPoint temp;
+		for(int i=0;i<8;i++)
+		{
+			temp = ccpAdd(pos,surround[i]);
+			tempIcon = getIconByLoc(temp.x,temp.y);
+			if(tempIcon)
+			{
+				if(!tempIcon->getBeRemove())
+				{
+					tempIcon->setBeRemove(true);
+					setEffectIcons(tempIcon);
+				}
+			}
+		}
+	}else if(status==4)
+	{
+		for(int i=0;i<icons->count();i++)
+		{
+			tempIcon = (GameIcon*)icons->objectAtIndex(i);
+			if(tempIcon->getID() == id)
+			{
+				if(!tempIcon->getBeRemove())
+				{
+					tempIcon->setBeRemove(true);
+					setEffectIcons(tempIcon);
+				}
+			}
+		}
+	}
 }
 void GameLayer::onMoveEnd()
 {
@@ -351,26 +387,38 @@ void GameLayer::onMoveEnd()
 			if(icon)
 			{
 				bool isSel = selIcon == icon || swapIcon == icon;
-				if(checkCell(icon)&&icon->canbeRemove(isSel))
+				if(checkCell(icon))
 				{
-					//selicon为空时默认选一个来实现特效
-					if(selIcon == NULL)
-						selIcon = icon;
 					//获取受影响的icon
-					//setEffectIcons();
+					setEffectIcons(icon);
+					//selicon为空时默认选一个来实现特效
+					if(icon->canbeRemove(isSel))
+					{
+						if(selIcon == NULL)
+						{
+							selIcon = icon;
+							icon->canbeRemove(true);
+						}
+					}
 				}
-				if(icon->getBeRemove())
-				{
-					spares->addObject(icon);
-				}
+				
+			}
+		}
+		for(int i=0;i<icons->count();i++)
+		{
+			icon = (GameIcon*)icons->objectAtIndex(i);
+			if(icon->getBeRemove())
+			{
+				spares->addObject(icon);
 			}
 		}
 		for(int i=0;i<spares->count();i++)
 		{
 			icon = (GameIcon*)spares->objectAtIndex(i);
 			icons->removeObject(icon);
-			icon->removeFromParentAndCleanup(false);
+			icon->removeFromParentAndCleanup(true);
 		}
+		selIcon = swapIcon = NULL;
 		fallDown();
 	}else
 	{
@@ -600,44 +648,23 @@ void GameLayer::fillIcons()
 		{
 			if(!getIconByLoc(i,j))
 			{
-				//++colFall[i];
-				int dis = ++colFall[i];
-
-				int targety = j;
-				GameIcon* icon = GameIcon::create(i,targety,(rand()%iconType+1));
-				icon->setPosition(correctPos(i,row+dis));
-				this->addChild(icon);
-				icons->addObject(icon);
-				icon->runAction(CCMoveTo::create(moveDuration,correctPos(icon->getX(),icon->getY())));
+				++colFall[i];
 			}
 		}
-		/*GameIcon* sicon;
-		for(int j=0;j<spares->count();j++)
+		for(int j=0;j<row;j++)
 		{
-			int dis = colFall[i];
-			sicon = (GameIcon*)spares->objectAtIndex(j);
-			if(sicon->getX() == i )
+			if(!getIconByLoc(i,j))
 			{
-				int targety = sicon->getY();
-				GameIcon* icon = GameIcon::create(i,targety,(rand()%7+1));
-				icon->setPosition(correctPos(i,dis+targety));
+				int dis = colFall[i];
+				if(maxTime<dis)
+					maxTime = dis;
+				int targety = j;
+				GameIcon* icon = GameIcon::create(i,targety,(rand()%iconType+1));
+				icon->setPosition(correctPos(i,targety+dis));
 				this->addChild(icon);
 				icons->addObject(icon);
-				icon->runAction(CCMoveTo::create(dis*moveDuration,correctPos(icon->getX(),icon->getY())));
+				icon->runAction(CCMoveTo::create((dis)*moveDuration,correctPos(icon->getX(),icon->getY())));
 			}
-		}*/
-		
-		for(int j=0;j<colFall[i];j++)
-		{
-			int dis = colFall[i];
-			if(maxTime<dis)
-				maxTime = dis;
-			/*GameIcon* icon = GameIcon::create(i,row-dis+j,rand()%7+1);
-			icon->setPosition(correctPos(i,row+j));
-			this->addChild(icon);
-			icons->addObject(icon);
-			icon->runAction(CCMoveTo::create(dis*moveDuration,correctPos(icon->getX(),icon->getY())));*/
-			//break;
 		}
 	}
 	for(int i=0;i<col;i++)
